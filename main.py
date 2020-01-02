@@ -17,12 +17,12 @@ rtc.datetime(utime.localtime(seconds))
 adc = machine.ADC(0)
 pin = machine.Pin(16, machine.Pin.OUT)
 
-def light_on:
+def light_on():
      pin.value(1)
      body = "You turned a light on!"
      return response_template % body
 
-def light_off:
+def light_off():
      pin.value(0)
      body = "You turned a light off!"
      return response_template % body
@@ -47,9 +47,15 @@ def dummy():
 
 switch_pin = machine.Pin(10, machine.Pin.IN)
 
+
 def switch():
      body = "{state: " + switch_pin.value() + "}"
      return response_template % body
+
+
+def light():
+    body = "{value: " + adc.read() + "}"
+    return response_template % body
 
 handlers = {
     'time': time,
@@ -57,6 +63,7 @@ handlers = {
     'light_on': light_on,
     'light_off': light_off,
     'switch': switch,
+    'light': light,
 }
 
 def main():
