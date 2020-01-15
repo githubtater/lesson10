@@ -2,30 +2,34 @@ try:
     import usocket as socket
 except:
     import socket
+import machine
+import ntptime, utime
+from machine import RTC
 
 response_template = """HTTP/1.0 200 OK
 
 %s
 """
-import machine
-import ntptime, utime
-from machine import RTC
+
 seconds = ntptime.time()
 rtc = RTC()
 rtc.datetime(utime.localtime(seconds))
 
 adc = machine.ADC(0)
 pin = machine.Pin(16, machine.Pin.OUT)
+switch_pin = machine.Pin(10, machine.Pin.IN)
+
 
 def light_on():
-     pin.value(1)
-     body = "You turned a light on!"
-     return response_template % body
+    pin.value(1)
+    body = "You turned a light on!"
+    return response_template % body
+
 
 def light_off():
-     pin.value(0)
-     body = "You turned a light off!"
-     return response_template % body
+    pin.value(0)
+    body = "You turned a light off!"
+    return response_template % body
 
 
 def time():
@@ -42,20 +46,18 @@ def time():
 
 def dummy():
     body = "This is a dummy endpoint"
-
     return response_template % body
-
-switch_pin = machine.Pin(10, machine.Pin.IN)
 
 
 def switch():
-     body = "{state: " + switch_pin.value() + "}"
-     return response_template % body
+    body = "{state: " + switch_pin.value() + "}"
+    return response_template % body
 
 
 def light():
     body = "{value: " + adc.read() + "}"
     return response_template % body
+
 
 handlers = {
     'time': time,
@@ -65,6 +67,7 @@ handlers = {
     'switch': switch,
     'light': light,
 }
+
 
 def main():
     s = socket.socket()
